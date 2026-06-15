@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CampusX — LangChain Complete Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161d;
+    --surface2: #1a1e28;
+    --border: #252a38;
+    --accent: #7c6aff;
+    --accent2: #4ecdc4;
+    --accent3: #ff6b6b;
+    --accent4: #ffd93d;
+    --text: #e8eaf0;
+    --text-muted: #6b7490;
+    --text-dim: #3d4460;
+    --code-bg: #0a0c12;
+    --green: #4af49e;
+    --orange: #ff9f43;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13, 15, 20, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--accent); }
+  .header-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    display: flex;
+    gap: 1.5rem;
+  }
+  .badge {
+    background: var(--accent);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ── SIDEBAR ── */
+  nav {
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 0;
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .nav-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 0.5rem 1.5rem;
+    margin-top: 1rem;
+  }
+  nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 1.5rem;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    transition: all 0.15s ease;
+    border-left: 2px solid transparent;
+  }
+  nav a:hover { color: var(--text); background: var(--surface); }
+  nav a.active { color: var(--accent); border-left-color: var(--accent); background: rgba(124,106,255,0.06); }
+  .nav-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    min-width: 18px;
+  }
+
+  /* ── MAIN ── */
+  main {
+    padding: 3rem 4rem;
+    max-width: 900px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    margin-bottom: 4rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin-bottom: 1rem;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  .hero-desc {
+    color: var(--text-muted);
+    font-size: 1rem;
+    max-width: 600px;
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ── LECTURE SECTIONS ── */
+  .lecture {
+    margin-bottom: 4rem;
+    scroll-margin-top: 72px;
+  }
+  .lec-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .lec-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+    white-space: nowrap;
+  }
+  .lec-title-block { flex: 1; }
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.55rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 0.3rem;
+  }
+  .lec-meta {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .tag-theory { color: var(--accent2); border-color: rgba(78,205,196,0.3); background: rgba(78,205,196,0.05); }
+  .tag-code { color: var(--accent); border-color: rgba(124,106,255,0.3); background: rgba(124,106,255,0.05); }
+  .tag-project { color: var(--orange); border-color: rgba(255,159,67,0.3); background: rgba(255,159,67,0.05); }
+  .tag-rag { color: var(--green); border-color: rgba(74,244,158,0.3); background: rgba(74,244,158,0.05); }
+  .tag-agent { color: var(--accent3); border-color: rgba(255,107,107,0.3); background: rgba(255,107,107,0.05); }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2.5rem 0;
+  }
+
+  /* ── CONTENT BLOCKS ── */
+  h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 1.8rem 0 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  p { color: #b0b8cc; margin-bottom: 0.8rem; }
+  strong { color: var(--text); font-weight: 600; }
+
+  ul, ol {
+    margin: 0.5rem 0 1rem 1.5rem;
+    color: #b0b8cc;
+  }
+  li { margin-bottom: 0.4rem; }
+  li strong { color: var(--text); }
+
+  /* ── CODE BLOCKS ── */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    overflow-x: auto;
+    margin: 1rem 0 1.5rem;
+    position: relative;
+  }
+  pre::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: #c8d3f5;
+  }
+  p code, li code {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    color: var(--accent);
+  }
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+    border-left: 3px solid;
+    font-size: 0.9rem;
+  }
+  .callout-info { background: rgba(124,106,255,0.07); border-color: var(--accent); }
+  .callout-tip { background: rgba(74,244,158,0.07); border-color: var(--green); }
+  .callout-warn { background: rgba(255,159,67,0.07); border-color: var(--orange); }
+  .callout-key { background: rgba(78,205,196,0.07); border-color: var(--accent2); }
+  .callout-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.4rem;
+  }
+  .callout-info .callout-label { color: var(--accent); }
+  .callout-tip .callout-label { color: var(--green); }
+  .callout-warn .callout-label { color: var(--orange); }
+  .callout-key .callout-label { color: var(--accent2); }
+  .callout p { margin: 0; color: #b0b8cc; }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.85rem;
+  }
+  th {
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-weight: 600;
+    text-align: left;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  td {
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border);
+    color: #b0b8cc;
+  }
+  tr:hover td { background: var(--surface); }
+
+  /* ── HIGHLIGHT PILL ── */
+  .key-concepts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.8rem 0 1.2rem;
+  }
+  .concept-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  /* ── FLOW DIAGRAM (text-based) ── */
+  .flow {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--accent2);
+    overflow-x: auto;
+    margin: 1rem 0 1.5rem;
+    line-height: 2;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    nav { display: none; }
+    main { padding: 2rem 1.5rem; }
+    h1 { font-size: 2rem; }
+  }
+
+  /* Syntax highlight tokens */
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .cm { color: #546e7a; font-style: italic; }
+  .cl { color: #ffcb6b; }
+  .imp { color: var(--accent3); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Campus<span>X</span> · LangChain</div>
+  <div class="header-meta">
+    <span>21 Lectures</span>
+    <span>GenAI using LangChain</span>
+    <span class="badge">2025</span>
+  </div>
+</header>
+
+<div class="layout">
+
+<!-- ── SIDEBAR ── -->
+<nav id="sidebar">
+  <div class="nav-section-label">Foundations</div>
+  <a href="#l0" class="active"><span class="nav-num">00</span> Course Intro</a>
+  <a href="#l1"><span class="nav-num">01</span> Intro to LangChain</a>
+  <a href="#l2"><span class="nav-num">02</span> Components</a>
+  <a href="#l3"><span class="nav-num">03</span> Models</a>
+  <div class="nav-section-label">I/O Layer</div>
+  <a href="#l4"><span class="nav-num">04</span> Prompts</a>
+  <a href="#l5"><span class="nav-num">05</span> Structured Output</a>
+  <a href="#l6"><span class="nav-num">06</span> Output Parsers</a>
+  <div class="nav-section-label">Chains & Orchestration</div>
+  <a href="#l7"><span class="nav-num">07</span> Chains</a>
+  <a href="#l8"><span class="nav-num">08</span> Runnables Part 1</a>
+  <a href="#l9"><span class="nav-num">09</span> Runnables Part 2</a>
+  <div class="nav-section-label">RAG Pipeline</div>
+  <a href="#l10"><span class="nav-num">10</span> Document Loaders</a>
+  <a href="#l11"><span class="nav-num">11</span> Text Splitters</a>
+  <a href="#l12"><span class="nav-num">12</span> Embeddings</a>
+  <a href="#l13"><span class="nav-num">13</span> Vector Stores</a>
+  <a href="#l14"><span class="nav-num">14</span> Retrievers</a>
+  <a href="#l15"><span class="nav-num">15</span> RAG Pipeline Build</a>
+  <div class="nav-section-label">Memory & Tools</div>
+  <a href="#l16"><span class="nav-num">16</span> Chat History</a>
+  <a href="#l17"><span class="nav-num">17</span> Tool Calling</a>
+  <div class="nav-section-label">Agents & Projects</div>
+  <a href="#l18"><span class="nav-num">18</span> End-to-End Agent</a>
+  <a href="#l19"><span class="nav-num">19</span> YouTube RAG Chatbot</a>
+  <a href="#l20"><span class="nav-num">20</span> Local LLMs (Ollama)</a>
+  <a href="#l21"><span class="nav-num">21</span> Bonus: Advanced RAG</a>
+</nav>
+
+<!-- ── MAIN CONTENT ── -->
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">// CampusX · Nitish Singh · 2025</div>
+    <h1>Generative AI using<br/><em>LangChain</em></h1>
+    <p class="hero-desc">Complete lecture-by-lecture notes for the CampusX YouTube playlist. Covers everything from LangChain fundamentals to building production-ready RAG pipelines and AI agents.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">21</div><div class="stat-label">Lectures</div></div>
+      <div class="stat"><div class="stat-num">6</div><div class="stat-label">Modules</div></div>
+      <div class="stat"><div class="stat-num">2</div><div class="stat-label">Projects</div></div>
+      <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Concepts</div></div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────── LECTURE 0 ────────────────────────── -->
+  <section class="lecture" id="l0">
+    <div class="lec-header">
+      <span class="lec-num">LEC 00</span>
+      <div class="lec-title-block">
+        <h2>GenAI Roadmap & Course Intro</h2>
+        <div class="lec-meta">
+          <span class="tag tag-theory">Theory</span>
+          <span class="tag tag-theory">Roadmap</span>
+        </div>
+      </div>
+    </div>
+    <h3>What this playlist covers</h3>
+    <p>Nitish starts by laying out the <strong>complete GenAI roadmap for beginners</strong>. The goal is to take you from zero LLM knowledge to building full-stack AI applications using LangChain.</p>
+    <div class="callout callout-info">
+      <div class="callout-label">🗺 Learning Path</div>
+      <p>Python → LLM Fundamentals → LangChain Core → RAG → Agents → Projects</p>
+    </div>
+    <h3>Why LangChain?</h3>
+    <ul>
+      <li>LangChain is the <strong>most popular framework</strong> for building LLM-powered applications</li>
+      <li>Provides abstractions for models, prompts, chains, memory, retrievers, and agents</li>
+      <li>Huge ecosystem — integrates with OpenAI, Anthropic, Google, HuggingFace, Ollama, and dozens of vector stores</li>
+      <li>Active open-source community with weekly releases</li>
+    </ul>
+    <h3>Prerequisites</h3>
+    <ul>
+      <li>Basic Python (functions, classes, pip)</li>
+      <li>Understanding of what an LLM / ChatGPT is</li>
+      <li>Optional: some ML background helps</li>
+    </ul>
+    <div class="callout callout-tip">
+      <div class="callout-label">✅ Tip</div>
+      <p>All code is available on GitHub: <code>github.com/campusx-official</code>. Each lecture has its own repo.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 1 ────────────────────────── -->
+  <section class="lecture" id="l1">
+    <div class="lec-header">
+      <span class="lec-num">LEC 01</span>
+      <div class="lec-title-block">
+        <h2>Introduction to LangChain</h2>
+        <div class="lec-meta">
+          <span class="tag tag-theory">Theory</span>
+          <span class="tag tag-code">Code</span>
+        </div>
+      </div>
+    </div>
+    <h3>What is LangChain?</h3>
+    <p>LangChain is an <strong>open-source framework</strong> designed to build applications powered by Large Language Models. It provides composable building blocks so you can chain together prompts, models, memory, tools, and external data sources.</p>
+    <div class="callout callout-info">
+      <div class="callout-label">📌 Core Idea</div>
+      <p>Instead of calling the OpenAI API directly and gluing everything yourself, LangChain gives you <strong>components</strong> that snap together like Lego bricks.</p>
+    </div>
+    <h3>The Problem LangChain Solves</h3>
+    <ul>
+      <li>Raw LLM APIs are stateless — they have no memory, no tools, no data access</li>
+      <li>Building real apps requires: prompt management, memory, retrieval, output parsing, tool use</li>
+      <li>LangChain provides all of these as composable abstractions</li>
+    </ul>
+    <h3>Installation</h3>
+<pre data-lang="bash"><code>pip install langchain langchain-openai langchain-community python-dotenv
+</code></pre>
+    <h3>First API call with LangChain</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="cl">ChatOpenAI</span>
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">import</span> os
+
+load_dotenv()
+
+model = <span class="cl">ChatOpenAI</span>(
+    model=<span class="str">"gpt-4o"</span>,
+    temperature=<span class="imp">0.7</span>
+)
+
+response = model.invoke(<span class="str">"What is LangChain?"</span>)
+<span class="fn">print</span>(response.content)
+</code></pre>
+    <h3>Key LangChain Packages (v0.3+)</h3>
+    <table>
+      <tr><th>Package</th><th>Purpose</th></tr>
+      <tr><td><code>langchain</code></td><td>Core abstractions (chains, prompts, retrievers)</td></tr>
+      <tr><td><code>langchain-openai</code></td><td>OpenAI / ChatOpenAI model wrappers</td></tr>
+      <tr><td><code>langchain-community</code></td><td>Community integrations (document loaders, vector stores)</td></tr>
+      <tr><td><code>langchain-core</code></td><td>Base interfaces, LCEL primitives</td></tr>
+      <tr><td><code>langgraph</code></td><td>Stateful multi-agent orchestration</td></tr>
+    </table>
+    <div class="callout callout-warn">
+      <div class="callout-label">⚠️ Note</div>
+      <p>LangChain v0.2+ introduced LCEL (LangChain Expression Language) as the preferred way to build chains. Nitish teaches the modern LCEL approach throughout.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 2 ────────────────────────── -->
+  <section class="lecture" id="l2">
+    <div class="lec-header">
+      <span class="lec-num">LEC 02</span>
+      <div class="lec-title-block">
+        <h2>LangChain Components</h2>
+        <div class="lec-meta"><span class="tag tag-theory">Theory</span></div>
+      </div>
+    </div>
+    <h3>The 6 Core Component Types</h3>
+    <p>LangChain's architecture revolves around six composable building blocks:</p>
+    <div class="key-concepts">
+      <span class="concept-pill">Models</span>
+      <span class="concept-pill">Prompts</span>
+      <span class="concept-pill">Chains</span>
+      <span class="concept-pill">Memory</span>
+      <span class="concept-pill">Retrievers</span>
+      <span class="concept-pill">Agents</span>
+    </div>
+    <h3>1. Models</h3>
+    <p>Wrappers around LLMs and Chat Models. Two types:</p>
+    <ul>
+      <li><strong>LLMs</strong> — take a string, return a string (<code>llm.invoke("...")</code>)</li>
+      <li><strong>Chat Models</strong> — take a list of messages, return a message (<code>chat.invoke([HumanMessage(...)])</code>)</li>
+    </ul>
+    <h3>2. Prompts</h3>
+    <p>Template-based prompt management. <code>PromptTemplate</code> for LLMs, <code>ChatPromptTemplate</code> for Chat Models. They prevent hardcoding and allow dynamic variable injection.</p>
+    <h3>3. Output Parsers</h3>
+    <p>Transform raw model output into structured Python objects — strings, JSON, Pydantic models, lists, etc.</p>
+    <h3>4. Chains (LCEL)</h3>
+    <p>The <code>|</code> pipe operator connects components: <code>prompt | model | parser</code>. This is <strong>LCEL — LangChain Expression Language</strong>.</p>
+    <h3>5. Retrievers & Vector Stores</h3>
+    <p>Components that fetch relevant documents from external data sources to augment LLM context. Core of RAG architecture.</p>
+    <h3>6. Agents</h3>
+    <p>LLMs that can <strong>decide which tools to call</strong> based on the user's query and tool descriptions. They loop until the task is complete.</p>
+    <div class="flow">
+User Query
+  → Prompt Template (formats query)
+  → Chat Model (generates response)
+  → Output Parser (structures output)
+  → Final Answer</div>
+    <div class="callout callout-key">
+      <div class="callout-label">🔑 Key Principle</div>
+      <p>Every LangChain component is a <strong>Runnable</strong>. This means they all share a standard interface: <code>.invoke()</code>, <code>.stream()</code>, <code>.batch()</code>. This is what makes the pipe <code>|</code> operator work.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 3 ────────────────────────── -->
+  <section class="lecture" id="l3">
+    <div class="lec-header">
+      <span class="lec-num">LEC 03</span>
+      <div class="lec-title-block">
+        <h2>LangChain Models — In-Depth</h2>
+        <div class="lec-meta"><span class="tag tag-theory">Theory</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>LLM vs Chat Model</h3>
+    <table>
+      <tr><th>Feature</th><th>LLM</th><th>Chat Model</th></tr>
+      <tr><td>Input</td><td>Single string</td><td>List of messages</td></tr>
+      <tr><td>Output</td><td>String</td><td>AIMessage object</td></tr>
+      <tr><td>Example</td><td><code>OpenAI</code></td><td><code>ChatOpenAI</code></td></tr>
+      <tr><td>Use case</td><td>Completion tasks</td><td>Conversations, RAG, agents</td></tr>
+    </table>
+    <h3>Message Types</h3>
+    <ul>
+      <li><strong>SystemMessage</strong> — sets the model's persona/behavior</li>
+      <li><strong>HumanMessage</strong> — user's input</li>
+      <li><strong>AIMessage</strong> — model's response</li>
+      <li><strong>ToolMessage</strong> — result from a tool call</li>
+    </ul>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.messages <span class="kw">import</span> <span class="cl">HumanMessage</span>, <span class="cl">SystemMessage</span>
+
+messages = [
+    <span class="cl">SystemMessage</span>(content=<span class="str">"You are a helpful coding assistant."</span>),
+    <span class="cl">HumanMessage</span>(content=<span class="str">"Explain decorators in Python."</span>)
+]
+
+response = model.invoke(messages)
+<span class="fn">print</span>(response.content)   <span class="cm"># AIMessage.content</span>
+</code></pre>
+    <h3>Model Parameters</h3>
+    <ul>
+      <li><strong>temperature</strong> (0–2): creativity. 0 = deterministic, 1+ = creative</li>
+      <li><strong>max_tokens</strong>: maximum tokens in response</li>
+      <li><strong>model</strong>: e.g., <code>"gpt-4o"</code>, <code>"gpt-3.5-turbo"</code></li>
+      <li><strong>streaming</strong>: set <code>streaming=True</code> for token-by-token output</li>
+    </ul>
+    <h3>Streaming</h3>
+<pre data-lang="python"><code><span class="kw">for</span> chunk <span class="kw">in</span> model.stream(<span class="str">"Tell me a story about AI"</span>):
+    <span class="fn">print</span>(chunk.content, end=<span class="str">""</span>, flush=<span class="imp">True</span>)
+</code></pre>
+    <h3>Supported Model Providers</h3>
+    <div class="key-concepts">
+      <span class="concept-pill">OpenAI / AzureOpenAI</span>
+      <span class="concept-pill">Anthropic Claude</span>
+      <span class="concept-pill">Google Gemini</span>
+      <span class="concept-pill">HuggingFace</span>
+      <span class="concept-pill">Ollama (local)</span>
+      <span class="concept-pill">Groq</span>
+      <span class="concept-pill">Cohere</span>
+    </div>
+    <div class="callout callout-tip">
+      <div class="callout-label">✅ Best Practice</div>
+      <p>Store API keys in a <code>.env</code> file and load with <code>python-dotenv</code>. Never hardcode keys in source files.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 4 ────────────────────────── -->
+  <section class="lecture" id="l4">
+    <div class="lec-header">
+      <span class="lec-num">LEC 04</span>
+      <div class="lec-title-block">
+        <h2>Prompts in LangChain</h2>
+        <div class="lec-meta"><span class="tag tag-theory">Theory</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>Why Prompt Templates?</h3>
+    <p>Hard-coding prompts as strings is messy and not reusable. LangChain's <strong>Prompt Templates</strong> let you define a prompt once with variables, then fill in values at runtime.</p>
+    <h3>PromptTemplate (for LLMs)</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> <span class="cl">PromptTemplate</span>
+
+template = <span class="cl">PromptTemplate</span>(
+    input_variables=[<span class="str">"topic"</span>, <span class="str">"language"</span>],
+    template=<span class="str">"Explain {topic} in {language} in simple terms."</span>
+)
+
+<span class="cm"># Fill in values</span>
+prompt = template.invoke({<span class="str">"topic"</span>: <span class="str">"recursion"</span>, <span class="str">"language"</span>: <span class="str">"Hindi"</span>})
+</code></pre>
+    <h3>ChatPromptTemplate (for Chat Models)</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> <span class="cl">ChatPromptTemplate</span>
+
+prompt = <span class="cl">ChatPromptTemplate</span>.from_messages([
+    (<span class="str">"system"</span>, <span class="str">"You are a {role} assistant."</span>),
+    (<span class="str">"human"</span>,  <span class="str">"Explain {concept} with a real-world example."</span>)
+])
+
+chain = prompt | model
+result = chain.invoke({<span class="str">"role"</span>: <span class="str">"teaching"</span>, <span class="str">"concept"</span>: <span class="str">"polymorphism"</span>})
+</code></pre>
+    <h3>MessagesPlaceholder</h3>
+    <p>Used to insert a list of chat history messages (memory) into the prompt dynamically.</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> <span class="cl">MessagesPlaceholder</span>
+
+prompt = <span class="cl">ChatPromptTemplate</span>.from_messages([
+    (<span class="str">"system"</span>, <span class="str">"You are a helpful assistant."</span>),
+    <span class="cl">MessagesPlaceholder</span>(variable_name=<span class="str">"history"</span>),
+    (<span class="str">"human"</span>, <span class="str">"{input}"</span>)
+])
+</code></pre>
+    <h3>Few-Shot Prompting</h3>
+    <p>Provide examples in the prompt to guide model behavior:</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> <span class="cl">FewShotChatMessagePromptTemplate</span>
+
+examples = [
+    {<span class="str">"input"</span>: <span class="str">"2+2"</span>, <span class="str">"output"</span>: <span class="str">"4"</span>},
+    {<span class="str">"input"</span>: <span class="str">"capital of France"</span>, <span class="str">"output"</span>: <span class="str">"Paris"</span>}
+]
+</code></pre>
+    <div class="callout callout-key">
+      <div class="callout-label">🔑 Key Insight</div>
+      <p>A <code>ChatPromptTemplate</code> is a <strong>Runnable</strong>. Calling <code>.invoke(dict)</code> returns a <code>ChatPromptValue</code> (list of messages), which can be piped directly into a model.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 5 ────────────────────────── -->
+  <section class="lecture" id="l5">
+    <div class="lec-header">
+      <span class="lec-num">LEC 05</span>
+      <div class="lec-title-block">
+        <h2>Structured Output in LangChain</h2>
+        <div class="lec-meta"><span class="tag tag-theory">Theory</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>The Problem</h3>
+    <p>LLMs return free-form text. Real applications need <strong>structured data</strong> — JSON, typed Python objects, specific fields. Structured Output solves this.</p>
+    <h3>Method 1: <code>.with_structured_output()</code></h3>
+    <p>The cleanest modern way. Pass a <strong>Pydantic model</strong> or TypedDict and the LLM will constrain its output to match:</p>
+<pre data-lang="python"><code><span class="kw">from</span> pydantic <span class="kw">import</span> <span class="cl">BaseModel</span>, <span class="cl">Field</span>
+
+<span class="kw">class</span> <span class="cl">MovieReview</span>(<span class="cl">BaseModel</span>):
+    title: str = <span class="cl">Field</span>(description=<span class="str">"Title of the movie"</span>)
+    rating: int = <span class="cl">Field</span>(description=<span class="str">"Rating from 1 to 10"</span>)
+    summary: str = <span class="cl">Field</span>(description=<span class="str">"One sentence summary"</span>)
+
+structured_model = model.with_structured_output(<span class="cl">MovieReview</span>)
+result = structured_model.invoke(<span class="str">"Review Interstellar"</span>)
+
+<span class="fn">print</span>(result.title)   <span class="cm"># "Interstellar"</span>
+<span class="fn">print</span>(result.rating)  <span class="cm"># 9</span>
+</code></pre>
+    <h3>How it works under the hood</h3>
+    <p>LangChain uses <strong>function calling / tool use</strong> (supported by OpenAI, Anthropic, Google) to force structured output. The Pydantic model is converted to a JSON schema, sent as a tool definition, and the model fills in the fields.</p>
+    <h3>Method 2: TypedDict</h3>
+<pre data-lang="python"><code><span class="kw">from</span> typing <span class="kw">import</span> TypedDict
+
+<span class="kw">class</span> <span class="cl">Joke</span>(TypedDict):
+    setup: str
+    punchline: str
+
+structured_model = model.with_structured_output(<span class="cl">Joke</span>)
+result = structured_model.invoke(<span class="str">"Tell me a programming joke"</span>)
+</code></pre>
+    <h3>Pydantic vs TypedDict</h3>
+    <table>
+      <tr><th>Feature</th><th>Pydantic</th><th>TypedDict</th></tr>
+      <tr><td>Validation</td><td>✅ Full validation</td><td>❌ No validation</td></tr>
+      <tr><td>Default values</td><td>✅ Yes</td><td>❌ No</td></tr>
+      <tr><td>Field descriptions</td><td>✅ <code>Field()</code></td><td>❌ No</td></tr>
+      <tr><td>Use when</td><td>Production apps</td><td>Quick prototypes</td></tr>
+    </table>
+    <div class="callout callout-tip">
+      <div class="callout-label">✅ Best Practice</div>
+      <p>Always use Pydantic with <code>Field(description=...)</code>. The descriptions are injected into the JSON schema — better descriptions = better model accuracy on filling fields.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 6 ────────────────────────── -->
+  <section class="lecture" id="l6">
+    <div class="lec-header">
+      <span class="lec-num">LEC 06</span>
+      <div class="lec-title-block">
+        <h2>Output Parsers</h2>
+        <div class="lec-meta"><span class="tag tag-theory">Theory</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>What are Output Parsers?</h3>
+    <p>Output Parsers are Runnables that sit at the end of a chain to <strong>transform raw LLM text output</strong> into usable Python objects. They're separate from Structured Output — they work by parsing text, not via function calling.</p>
+    <h3>StrOutputParser</h3>
+    <p>The simplest parser — extracts <code>.content</code> from an <code>AIMessage</code> and returns a plain string:</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.output_parsers <span class="kw">import</span> <span class="cl">StrOutputParser</span>
+
+chain = prompt | model | <span class="cl">StrOutputParser</span>()
+result = chain.invoke({<span class="str">"topic"</span>: <span class="str">"sorting algorithms"</span>})
+<span class="fn">print</span>(result)  <span class="cm"># plain string, not AIMessage</span>
+</code></pre>
+    <h3>JsonOutputParser</h3>
+    <p>Parses JSON from the model response. You can optionally provide a Pydantic schema for additional validation:</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.output_parsers <span class="kw">import</span> <span class="cl">JsonOutputParser</span>
+
+parser = <span class="cl">JsonOutputParser</span>(pydantic_object=<span class="cl">MovieReview</span>)
+
+<span class="cm"># The parser also generates format instructions</span>
+format_instructions = parser.get_format_instructions()
+
+prompt = <span class="cl">ChatPromptTemplate</span>.from_messages([
+    (<span class="str">"human"</span>, <span class="str">"Review {movie}.\n{format_instructions}"</span>)
+]).partial(format_instructions=format_instructions)
+
+chain = prompt | model | parser
+</code></pre>
+    <h3>PydanticOutputParser</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.output_parsers <span class="kw">import</span> <span class="cl">PydanticOutputParser</span>
+
+parser = <span class="cl">PydanticOutputParser</span>(pydantic_object=<span class="cl">MovieReview</span>)
+chain = prompt | model | parser
+result = chain.invoke({<span class="str">"movie"</span>: <span class="str">"Inception"</span>})
+<span class="fn">print</span>(result.rating)  <span class="cm"># Pydantic validated int</span>
+</code></pre>
+    <h3>CommaSeparatedListOutputParser</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.output_parsers <span class="kw">import</span> <span class="cl">CommaSeparatedListOutputParser</span>
+
+parser = <span class="cl">CommaSeparatedListOutputParser</span>()
+chain = prompt | model | parser
+result = chain.invoke({<span class="str">"topic"</span>: <span class="str">"Python frameworks"</span>})
+<span class="cm"># returns: ["Django", "Flask", "FastAPI", "LangChain"]</span>
+</code></pre>
+    <div class="callout callout-info">
+      <div class="callout-label">📌 Output Parsers vs Structured Output</div>
+      <p><strong>Structured Output</strong> uses native function calling — more reliable but requires model support. <strong>Output Parsers</strong> parse text — works with any model including open-source ones, but can fail if the model doesn't format correctly.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 7 ────────────────────────── -->
+  <section class="lecture" id="l7">
+    <div class="lec-header">
+      <span class="lec-num">LEC 07</span>
+      <div class="lec-title-block">
+        <h2>Chains in LangChain</h2>
+        <div class="lec-meta"><span class="tag tag-theory">Theory</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>What is a Chain?</h3>
+    <p>A chain is a <strong>sequence of components</strong> where each component's output becomes the next component's input. In modern LangChain, chains are built using LCEL and the <code>|</code> pipe operator.</p>
+    <h3>Simple Chain</h3>
+<pre data-lang="python"><code>chain = prompt | model | <span class="cl">StrOutputParser</span>()
+
+<span class="cm"># Invocation</span>
+result = chain.invoke({<span class="str">"input"</span>: <span class="str">"What is machine learning?"</span>})
+</code></pre>
+    <h3>Sequential Chain</h3>
+    <p>The output of one chain feeds into another. Use <code>RunnablePassthrough</code> to carry original inputs forward:</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.runnables <span class="kw">import</span> <span class="cl">RunnablePassthrough</span>
+
+<span class="cm"># Step 1: Generate a topic</span>
+chain1 = prompt1 | model | <span class="cl">StrOutputParser</span>()
+
+<span class="cm"># Step 2: Elaborate on the topic</span>
+chain2 = (
+    {<span class="str">"topic"</span>: chain1, <span class="str">"original"</span>: <span class="cl">RunnablePassthrough</span>()}
+    | prompt2
+    | model
+    | <span class="cl">StrOutputParser</span>()
+)
+</code></pre>
+    <h3>Parallel Chains with RunnableParallel</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.runnables <span class="kw">import</span> <span class="cl">RunnableParallel</span>
+
+<span class="cm"># Run two chains simultaneously</span>
+parallel = <span class="cl">RunnableParallel</span>(
+    pros=pros_chain,
+    cons=cons_chain
+)
+result = parallel.invoke({<span class="str">"topic"</span>: <span class="str">"Python"</span>})
+<span class="cm"># result = {"pros": "...", "cons": "..."}</span>
+</code></pre>
+    <div class="callout callout-key">
+      <div class="callout-label">🔑 LCEL Principle</div>
+      <p>Every component in LCEL is a <strong>Runnable</strong>. The <code>|</code> operator calls <code>.pipe()</code> under the hood. A dict like <code>{"key": runnable}</code> is automatically treated as a <code>RunnableParallel</code>.</p>
+    </div>
+    <h3>Legacy LLMChain vs LCEL</h3>
+    <table>
+      <tr><th></th><th>Legacy LLMChain</th><th>Modern LCEL</th></tr>
+      <tr><td>Syntax</td><td><code>LLMChain(llm=..., prompt=...)</code></td><td><code>prompt | model | parser</code></td></tr>
+      <tr><td>Streaming</td><td>Limited</td><td>Native</td></tr>
+      <tr><td>Async</td><td>Limited</td><td>Native <code>.ainvoke()</code></td></tr>
+      <tr><td>Status</td><td>Deprecated</td><td>Recommended</td></tr>
+    </table>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 8 ────────────────────────── -->
+  <section class="lecture" id="l8">
+    <div class="lec-header">
+      <span class="lec-num">LEC 08</span>
+      <div class="lec-title-block">
+        <h2>Runnables in LangChain — Part 1</h2>
+        <div class="lec-meta"><span class="tag tag-theory">Theory</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>The Runnable Interface</h3>
+    <p>Everything in LCEL implements the <code>Runnable</code> interface. This means every component exposes:</p>
+    <ul>
+      <li><code>.invoke(input)</code> — single input, single output (synchronous)</li>
+      <li><code>.stream(input)</code> — yields output tokens/chunks as they arrive</li>
+      <li><code>.batch(inputs)</code> — list of inputs → list of outputs (parallel)</li>
+      <li><code>.ainvoke(input)</code> — async version of invoke</li>
+      <li><code>.astream(input)</code> — async streaming</li>
+    </ul>
+    <h3>RunnableLambda</h3>
+    <p>Wrap any Python function as a Runnable to use in a chain:</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.runnables <span class="kw">import</span> <span class="cl">RunnableLambda</span>
+
+<span class="kw">def</span> <span class="fn">word_count</span>(text: str) -> int:
+    <span class="kw">return</span> <span class="fn">len</span>(text.split())
+
+counter = <span class="cl">RunnableLambda</span>(word_count)
+
+<span class="cm"># Now usable in a chain</span>
+chain = prompt | model | <span class="cl">StrOutputParser</span>() | counter
+result = chain.invoke({<span class="str">"topic"</span>: <span class="str">"Python"</span>})
+<span class="cm"># result is an int — word count of the response</span>
+</code></pre>
+    <h3>RunnablePassthrough</h3>
+    <p>Passes the input through unchanged. Critical for preserving original values in parallel chains:</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.runnables <span class="kw">import</span> <span class="cl">RunnablePassthrough</span>
+
+chain = {
+    <span class="str">"question"</span>: <span class="cl">RunnablePassthrough</span>(),  <span class="cm"># original input</span>
+    <span class="str">"context"</span>: retriever               <span class="cm"># retrieved docs</span>
+} | prompt | model | <span class="cl">StrOutputParser</span>()
+</code></pre>
+    <h3>RunnableParallel</h3>
+    <p>Runs multiple runnables in parallel and merges their outputs into a dict. Great for branching logic:</p>
+<pre data-lang="python"><code>parallel_chain = <span class="cl">RunnableParallel</span>({
+    <span class="str">"english"</span>: english_chain,
+    <span class="str">"hindi"</span>: hindi_chain,
+    <span class="str">"summary"</span>: summary_chain
+})
+result = parallel_chain.invoke({<span class="str">"text"</span>: <span class="str">"Explain RAG"</span>})
+</code></pre>
+    <div class="callout callout-info">
+      <div class="callout-label">📌 Dict Shorthand</div>
+      <p>When you write <code>{"key": runnable}</code> as a step in a chain, LangChain auto-wraps it in <code>RunnableParallel</code>. It's syntactic sugar.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 9 ────────────────────────── -->
+  <section class="lecture" id="l9">
+    <div class="lec-header">
+      <span class="lec-num">LEC 09</span>
+      <div class="lec-title-block">
+        <h2>Runnables — Part 2</h2>
+        <div class="lec-meta"><span class="tag tag-code">Code</span><span class="tag tag-theory">Theory</span></div>
+      </div>
+    </div>
+    <h3>RunnableBranch</h3>
+    <p>Conditional logic in chains. Routes input to different sub-chains based on conditions:</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.runnables <span class="kw">import</span> <span class="cl">RunnableBranch</span>
+
+branch = <span class="cl">RunnableBranch</span>(
+    (<span class="kw">lambda</span> x: x[<span class="str">"topic"</span>] == <span class="str">"math"</span>,   math_chain),
+    (<span class="kw">lambda</span> x: x[<span class="str">"topic"</span>] == <span class="str">"code"</span>,   code_chain),
+    default_chain   <span class="cm"># fallback</span>
+)
+</code></pre>
+    <h3>RunnableWithFallbacks</h3>
+    <p>Add error handling to any runnable — if the primary fails, fallback to another:</p>
+<pre data-lang="python"><code>robust_chain = gpt4_chain.with_fallbacks([gpt35_chain, claude_chain])
+</code></pre>
+    <h3>RunnableRetry</h3>
+<pre data-lang="python"><code>resilient_chain = chain.with_retry(
+    stop_after_attempt=<span class="imp">3</span>,
+    wait_exponential_jitter=<span class="imp">True</span>
+)
+</code></pre>
+    <h3>itemgetter for dict access</h3>
+<pre data-lang="python"><code><span class="kw">from</span> operator <span class="kw">import</span> itemgetter
+
+chain = (
+    {
+        <span class="str">"question"</span>: itemgetter(<span class="str">"question"</span>),
+        <span class="str">"context"</span>:  itemgetter(<span class="str">"context"</span>) | format_docs
+    }
+    | prompt | model | <span class="cl">StrOutputParser</span>()
+)
+</code></pre>
+    <h3>Batch Processing</h3>
+<pre data-lang="python"><code>questions = [
+    {<span class="str">"topic"</span>: <span class="str">"Python"</span>},
+    {<span class="str">"topic"</span>: <span class="str">"LangChain"</span>},
+    {<span class="str">"topic"</span>: <span class="str">"RAG"</span>}
+]
+<span class="cm"># Processes all 3 in parallel</span>
+results = chain.batch(questions, config={<span class="str">"max_concurrency"</span>: <span class="imp">3</span>})
+</code></pre>
+    <div class="callout callout-key">
+      <div class="callout-label">🔑 Summary: Runnable Types</div>
+      <p><code>RunnableLambda</code> — wrap a function · <code>RunnablePassthrough</code> — pass input unchanged · <code>RunnableParallel</code> — run in parallel · <code>RunnableBranch</code> — conditional routing · <code>.with_fallbacks()</code> — error resilience · <code>.with_retry()</code> — auto-retry</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 10 ────────────────────────── -->
+  <section class="lecture" id="l10">
+    <div class="lec-header">
+      <span class="lec-num">LEC 10</span>
+      <div class="lec-title-block">
+        <h2>Document Loaders</h2>
+        <div class="lec-meta"><span class="tag tag-rag">RAG</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>What are Document Loaders?</h3>
+    <p>Document Loaders ingest data from various external sources and return a list of <strong>Document</strong> objects. Each Document has:</p>
+    <ul>
+      <li><code>page_content</code> — the actual text</li>
+      <li><code>metadata</code> — dict with source info (filename, page number, URL, etc.)</li>
+    </ul>
+    <div class="flow">
+External Source (PDF / URL / DB / CSV / YouTube)
+  ↓  DocumentLoader
+List[Document(page_content=..., metadata={...})]</div>
+    <h3>Common Document Loaders</h3>
+<pre data-lang="python"><code><span class="cm"># PDF</span>
+<span class="kw">from</span> langchain_community.document_loaders <span class="kw">import</span> <span class="cl">PyPDFLoader</span>
+loader = <span class="cl">PyPDFLoader</span>(<span class="str">"document.pdf"</span>)
+docs = loader.load()  <span class="cm"># one Document per page</span>
+
+<span class="cm"># Web URL</span>
+<span class="kw">from</span> langchain_community.document_loaders <span class="kw">import</span> <span class="cl">WebBaseLoader</span>
+loader = <span class="cl">WebBaseLoader</span>(<span class="str">"https://python.langchain.com/docs/..."</span>)
+docs = loader.load()
+
+<span class="cm"># CSV</span>
+<span class="kw">from</span> langchain_community.document_loaders <span class="kw">import</span> <span class="cl">CSVLoader</span>
+loader = <span class="cl">CSVLoader</span>(<span class="str">"data.csv"</span>)
+docs = loader.load()
+
+<span class="cm"># YouTube Transcript</span>
+<span class="kw">from</span> langchain_community.document_loaders <span class="kw">import</span> <span class="cl">YoutubeLoader</span>
+loader = <span class="cl">YoutubeLoader</span>.from_youtube_url(
+    <span class="str">"https://youtube.com/watch?v=..."</span>,
+    add_video_info=<span class="imp">True</span>
+)
+docs = loader.load()
+</code></pre>
+    <h3>Load vs Lazy Load</h3>
+    <ul>
+      <li><code>.load()</code> — loads all documents into memory at once</li>
+      <li><code>.lazy_load()</code> — generator, memory-efficient for large files</li>
+      <li><code>.load_and_split(splitter)</code> — load and immediately chunk</li>
+    </ul>
+    <h3>Directory Loader</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_community.document_loaders <span class="kw">import</span> <span class="cl">DirectoryLoader</span>
+
+loader = <span class="cl">DirectoryLoader</span>(
+    <span class="str">"./docs/"</span>,
+    glob=<span class="str">"**/*.pdf"</span>,
+    loader_cls=<span class="cl">PyPDFLoader</span>
+)
+docs = loader.load()  <span class="cm"># loads all PDFs recursively</span>
+</code></pre>
+    <div class="callout callout-tip">
+      <div class="callout-label">✅ Best Practice</div>
+      <p>Always inspect <code>docs[0].metadata</code> after loading to understand what source info is available — it's useful for citations in RAG responses.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 11 ────────────────────────── -->
+  <section class="lecture" id="l11">
+    <div class="lec-header">
+      <span class="lec-num">LEC 11</span>
+      <div class="lec-title-block">
+        <h2>Text Splitters</h2>
+        <div class="lec-meta"><span class="tag tag-rag">RAG</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>Why Split Documents?</h3>
+    <p>LLMs have a <strong>context window limit</strong>. A 500-page PDF can't be sent as-is. We split it into smaller <strong>chunks</strong> that fit in the context window, then embed and store each chunk for retrieval.</p>
+    <div class="callout callout-warn">
+      <div class="callout-label">⚠️ Chunking is Critical</div>
+      <p>Chunk size and overlap dramatically affect RAG quality. Too small = context loss. Too large = irrelevant content retrieved. Typical: <code>chunk_size=1000</code>, <code>chunk_overlap=200</code>.</p>
+    </div>
+    <h3>RecursiveCharacterTextSplitter (Recommended)</h3>
+    <p>Splits by a priority list of separators: <code>["\n\n", "\n", " ", ""]</code>. Tries to keep paragraphs together, then lines, then words.</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_text_splitters <span class="kw">import</span> <span class="cl">RecursiveCharacterTextSplitter</span>
+
+splitter = <span class="cl">RecursiveCharacterTextSplitter</span>(
+    chunk_size=<span class="imp">1000</span>,      <span class="cm"># characters per chunk</span>
+    chunk_overlap=<span class="imp">200</span>,    <span class="cm"># overlap to preserve context</span>
+    length_function=<span class="fn">len</span>,
+    add_start_index=<span class="imp">True</span>  <span class="cm"># adds position metadata</span>
+)
+
+chunks = splitter.split_documents(docs)
+<span class="fn">print</span>(<span class="fn">len</span>(chunks))                  <span class="cm"># number of chunks</span>
+<span class="fn">print</span>(chunks[<span class="imp">0</span>].page_content)       <span class="cm"># first chunk text</span>
+<span class="fn">print</span>(chunks[<span class="imp">0</span>].metadata)           <span class="cm"># carries original metadata</span>
+</code></pre>
+    <h3>CharacterTextSplitter</h3>
+    <p>Simpler — splits on a single separator character (default <code>"\n\n"</code>):</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_text_splitters <span class="kw">import</span> <span class="cl">CharacterTextSplitter</span>
+
+splitter = <span class="cl">CharacterTextSplitter</span>(separator=<span class="str">"\n"</span>, chunk_size=<span class="imp">500</span>, chunk_overlap=<span class="imp">50</span>)
+</code></pre>
+    <h3>TokenTextSplitter</h3>
+    <p>Splits by tokens instead of characters. More accurate since LLMs think in tokens, not chars:</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_text_splitters <span class="kw">import</span> <span class="cl">TokenTextSplitter</span>
+
+splitter = <span class="cl">TokenTextSplitter</span>(chunk_size=<span class="imp">256</span>, chunk_overlap=<span class="imp">32</span>)
+</code></pre>
+    <h3>Chunk Size Decision Guide</h3>
+    <table>
+      <tr><th>Use Case</th><th>chunk_size</th><th>chunk_overlap</th></tr>
+      <tr><td>Q&A over documents</td><td>500–1000</td><td>100–200</td></tr>
+      <tr><td>Code documentation</td><td>1500–2000</td><td>200–400</td></tr>
+      <tr><td>Short FAQs</td><td>200–400</td><td>50–100</td></tr>
+      <tr><td>Long-form analysis</td><td>2000–4000</td><td>400–800</td></tr>
+    </table>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 12 ────────────────────────── -->
+  <section class="lecture" id="l12">
+    <div class="lec-header">
+      <span class="lec-num">LEC 12</span>
+      <div class="lec-title-block">
+        <h2>Embeddings</h2>
+        <div class="lec-meta"><span class="tag tag-rag">RAG</span><span class="tag tag-theory">Theory</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>What are Embeddings?</h3>
+    <p>Embeddings convert text into <strong>dense numerical vectors</strong> in a high-dimensional space. Semantically similar texts produce vectors that are close together (measured by cosine similarity or dot product).</p>
+    <div class="flow">
+"What is machine learning?"  →  [0.23, -0.14, 0.87, ..., 0.04]  (1536 dims)
+"Explain ML to a beginner"   →  [0.21, -0.16, 0.85, ..., 0.03]  (similar!)
+"What is the weather today?" →  [-0.54, 0.93, -0.21, ..., 0.77] (different)</div>
+    <h3>Why Embeddings for RAG?</h3>
+    <p>When a user asks a question, we embed the question and find the <strong>most similar document chunks</strong> using vector similarity search. This is semantic search — much better than keyword search.</p>
+    <h3>OpenAI Embeddings</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="cl">OpenAIEmbeddings</span>
+
+embeddings = <span class="cl">OpenAIEmbeddings</span>(model=<span class="str">"text-embedding-3-small"</span>)
+
+<span class="cm"># Embed a query</span>
+query_vector = embeddings.embed_query(<span class="str">"What is LangChain?"</span>)
+<span class="fn">print</span>(<span class="fn">len</span>(query_vector))  <span class="cm"># 1536</span>
+
+<span class="cm"># Embed documents (batch)</span>
+doc_vectors = embeddings.embed_documents([
+    <span class="str">"LangChain is a framework..."</span>,
+    <span class="str">"Python is a programming language..."</span>
+])
+</code></pre>
+    <h3>HuggingFace Embeddings (Free)</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_community.embeddings <span class="kw">import</span> <span class="cl">HuggingFaceEmbeddings</span>
+
+embeddings = <span class="cl">HuggingFaceEmbeddings</span>(
+    model_name=<span class="str">"sentence-transformers/all-MiniLM-L6-v2"</span>
+)
+</code></pre>
+    <h3>Embedding Models Comparison</h3>
+    <table>
+      <tr><th>Model</th><th>Dims</th><th>Cost</th><th>Quality</th></tr>
+      <tr><td>text-embedding-3-small</td><td>1536</td><td>$0.02/1M tokens</td><td>⭐⭐⭐⭐</td></tr>
+      <tr><td>text-embedding-3-large</td><td>3072</td><td>$0.13/1M tokens</td><td>⭐⭐⭐⭐⭐</td></tr>
+      <tr><td>all-MiniLM-L6-v2 (HF)</td><td>384</td><td>Free</td><td>⭐⭐⭐</td></tr>
+      <tr><td>nomic-embed-text (Ollama)</td><td>768</td><td>Free (local)</td><td>⭐⭐⭐⭐</td></tr>
+    </table>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 13 ────────────────────────── -->
+  <section class="lecture" id="l13">
+    <div class="lec-header">
+      <span class="lec-num">LEC 13</span>
+      <div class="lec-title-block">
+        <h2>Vector Stores</h2>
+        <div class="lec-meta"><span class="tag tag-rag">RAG</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>What is a Vector Store?</h3>
+    <p>A Vector Store (Vector Database) stores embedding vectors alongside their original text and metadata, and enables <strong>fast similarity search</strong> over millions of vectors using ANN (Approximate Nearest Neighbor) algorithms.</p>
+    <h3>FAISS (In-Memory, Local)</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_community.vectorstores <span class="kw">import</span> <span class="cl">FAISS</span>
+
+<span class="cm"># Build from documents</span>
+vectorstore = <span class="cl">FAISS</span>.from_documents(
+    documents=chunks,
+    embedding=embeddings
+)
+
+<span class="cm"># Similarity search</span>
+results = vectorstore.similarity_search(<span class="str">"What is RAG?"</span>, k=<span class="imp">4</span>)
+
+<span class="cm"># With scores</span>
+results = vectorstore.similarity_search_with_score(<span class="str">"What is RAG?"</span>, k=<span class="imp">4</span>)
+
+<span class="cm"># Save and load</span>
+vectorstore.save_local(<span class="str">"faiss_index"</span>)
+vectorstore = <span class="cl">FAISS</span>.load_local(<span class="str">"faiss_index"</span>, embeddings,
+                                allow_dangerous_deserialization=<span class="imp">True</span>)
+</code></pre>
+    <h3>Chroma (Persistent, Local)</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_chroma <span class="kw">import</span> <span class="cl">Chroma</span>
+
+<span class="cm"># Create with persistence</span>
+vectorstore = <span class="cl">Chroma</span>.from_documents(
+    documents=chunks,
+    embedding=embeddings,
+    persist_directory=<span class="str">"./chroma_db"</span>
+)
+
+<span class="cm"># Load existing</span>
+vectorstore = <span class="cl">Chroma</span>(
+    persist_directory=<span class="str">"./chroma_db"</span>,
+    embedding_function=embeddings
+)
+</code></pre>
+    <h3>Vector Store Comparison</h3>
+    <table>
+      <tr><th>Store</th><th>Type</th><th>Best For</th><th>Persistent</th></tr>
+      <tr><td>FAISS</td><td>In-memory</td><td>Prototyping, fast search</td><td>Manual save/load</td></tr>
+      <tr><td>Chroma</td><td>Local DB</td><td>Local development</td><td>✅ Auto</td></tr>
+      <tr><td>Pinecone</td><td>Cloud</td><td>Production, large scale</td><td>✅ Cloud</td></tr>
+      <tr><td>Qdrant</td><td>Cloud/Local</td><td>Production, open-source</td><td>✅ Both</td></tr>
+      <tr><td>Weaviate</td><td>Cloud/Local</td><td>Hybrid search</td><td>✅ Both</td></tr>
+    </table>
+    <h3>Adding Documents Later</h3>
+<pre data-lang="python"><code><span class="cm"># Add new documents to existing store</span>
+vectorstore.add_documents(new_chunks)
+
+<span class="cm"># Delete by ID</span>
+vectorstore.delete(ids=[<span class="str">"id1"</span>, <span class="str">"id2"</span>])
+</code></pre>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 14 ────────────────────────── -->
+  <section class="lecture" id="l14">
+    <div class="lec-header">
+      <span class="lec-num">LEC 14</span>
+      <div class="lec-title-block">
+        <h2>Retrievers</h2>
+        <div class="lec-meta"><span class="tag tag-rag">RAG</span><span class="tag tag-theory">Theory</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>What is a Retriever?</h3>
+    <p>A Retriever is a Runnable that takes a string query as input and returns a <code>List[Document]</code>. It's more abstract than a vector store — you don't have to specify the search method, just pass the query.</p>
+<pre data-lang="python"><code><span class="cm"># Convert a vector store to a retriever</span>
+retriever = vectorstore.as_retriever(
+    search_type=<span class="str">"similarity"</span>,  <span class="cm"># or "mmr", "similarity_score_threshold"</span>
+    search_kwargs={<span class="str">"k"</span>: <span class="imp">4</span>}
+)
+
+docs = retriever.invoke(<span class="str">"What is LangChain?"</span>)
+</code></pre>
+    <h3>Search Types</h3>
+    <ul>
+      <li><strong>similarity</strong> — returns top k most similar documents (default)</li>
+      <li><strong>mmr</strong> (Maximal Marginal Relevance) — balances relevance AND diversity; avoids returning 4 nearly-identical chunks</li>
+      <li><strong>similarity_score_threshold</strong> — only return docs above a minimum similarity score</li>
+    </ul>
+    <h3>MultiQueryRetriever</h3>
+    <p>Uses the LLM to auto-generate multiple variations of the query, then retrieves for each and deduplicates. Overcomes limitations of single-query retrieval:</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain.retrievers <span class="kw">import</span> <span class="cl">MultiQueryRetriever</span>
+
+retriever = <span class="cl">MultiQueryRetriever</span>.from_llm(
+    retriever=vectorstore.as_retriever(),
+    llm=model
+)
+<span class="cm"># For "What is RAG?", it might also search:
+# "How does Retrieval-Augmented Generation work?"
+# "Explain the RAG architecture"</span>
+</code></pre>
+    <h3>ContextualCompressionRetriever</h3>
+    <p>Post-processes retrieved docs to extract only the relevant portion, reducing noise sent to the LLM:</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain.retrievers <span class="kw">import</span> <span class="cl">ContextualCompressionRetriever</span>
+<span class="kw">from</span> langchain.retrievers.document_compressors <span class="kw">import</span> <span class="cl">LLMChainExtractor</span>
+
+compressor = <span class="cl">LLMChainExtractor</span>.from_llm(model)
+retriever = <span class="cl">ContextualCompressionRetriever</span>(
+    base_compressor=compressor,
+    base_retriever=base_retriever
+)
+</code></pre>
+    <h3>Other Retriever Types</h3>
+    <div class="key-concepts">
+      <span class="concept-pill">WikipediaRetriever</span>
+      <span class="concept-pill">ArxivRetriever</span>
+      <span class="concept-pill">BM25Retriever (keyword)</span>
+      <span class="concept-pill">EnsembleRetriever (hybrid)</span>
+      <span class="concept-pill">ParentDocumentRetriever</span>
+      <span class="concept-pill">SelfQueryRetriever</span>
+    </div>
+    <div class="callout callout-key">
+      <div class="callout-label">🔑 Retriever = Runnable</div>
+      <p>Since retrievers implement the Runnable interface, they can be piped directly into chains: <code>retriever | format_docs | prompt | model | parser</code></p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 15 ────────────────────────── -->
+  <section class="lecture" id="l15">
+    <div class="lec-header">
+      <span class="lec-num">LEC 15</span>
+      <div class="lec-title-block">
+        <h2>Building a Full RAG Pipeline</h2>
+        <div class="lec-meta"><span class="tag tag-rag">RAG</span><span class="tag tag-project">Project</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>RAG Architecture</h3>
+    <div class="flow">
+[INDEXING PHASE - run once]
+Documents → Loader → Splitter → Embeddings → Vector Store
+
+[RETRIEVAL PHASE - run per query]
+User Query → Embed Query → Vector Similarity Search → Top K Docs
+
+[GENERATION PHASE]
+(Query + Top K Docs) → Prompt → LLM → Answer</div>
+    <h3>Complete RAG Implementation</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_community.document_loaders <span class="kw">import</span> <span class="cl">PyPDFLoader</span>
+<span class="kw">from</span> langchain_text_splitters <span class="kw">import</span> <span class="cl">RecursiveCharacterTextSplitter</span>
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="cl">OpenAIEmbeddings</span>, <span class="cl">ChatOpenAI</span>
+<span class="kw">from</span> langchain_community.vectorstores <span class="kw">import</span> <span class="cl">FAISS</span>
+<span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> <span class="cl">ChatPromptTemplate</span>
+<span class="kw">from</span> langchain_core.output_parsers <span class="kw">import</span> <span class="cl">StrOutputParser</span>
+<span class="kw">from</span> langchain_core.runnables <span class="kw">import</span> <span class="cl">RunnablePassthrough</span>
+
+<span class="cm"># ── 1. LOAD ──</span>
+loader = <span class="cl">PyPDFLoader</span>(<span class="str">"my_doc.pdf"</span>)
+docs = loader.load()
+
+<span class="cm"># ── 2. SPLIT ──</span>
+splitter = <span class="cl">RecursiveCharacterTextSplitter</span>(chunk_size=<span class="imp">1000</span>, chunk_overlap=<span class="imp">200</span>)
+chunks = splitter.split_documents(docs)
+
+<span class="cm"># ── 3. EMBED + STORE ──</span>
+embeddings = <span class="cl">OpenAIEmbeddings</span>()
+vectorstore = <span class="cl">FAISS</span>.from_documents(chunks, embeddings)
+retriever = vectorstore.as_retriever(search_kwargs={<span class="str">"k"</span>: <span class="imp">4</span>})
+
+<span class="cm"># ── 4. PROMPT ──</span>
+prompt = <span class="cl">ChatPromptTemplate</span>.from_messages([
+    (<span class="str">"system"</span>, <span class="str">"""You are an assistant answering questions based on the provided context.
+If the answer is not in the context, say you don't know.
+
+Context:
+{context}"""</span>),
+    (<span class="str">"human"</span>, <span class="str">"{question}"</span>)
+])
+
+<span class="cm"># ── 5. FORMAT DOCS ──</span>
+<span class="kw">def</span> <span class="fn">format_docs</span>(docs):
+    <span class="kw">return</span> <span class="str">"\n\n"</span>.join(doc.page_content <span class="kw">for</span> doc <span class="kw">in</span> docs)
+
+<span class="cm"># ── 6. RAG CHAIN ──</span>
+rag_chain = (
+    {<span class="str">"context"</span>: retriever | format_docs, <span class="str">"question"</span>: <span class="cl">RunnablePassthrough</span>()}
+    | prompt
+    | <span class="cl">ChatOpenAI</span>(model=<span class="str">"gpt-4o"</span>)
+    | <span class="cl">StrOutputParser</span>()
+)
+
+answer = rag_chain.invoke(<span class="str">"What does the document say about RAG?"</span>)
+<span class="fn">print</span>(answer)
+</code></pre>
+    <div class="callout callout-tip">
+      <div class="callout-label">✅ Pro Tip</div>
+      <p>Add source citations to your RAG: return <code>(answer, docs)</code> using <code>RunnableParallel</code> so the user knows which chunks were used to generate the response.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 16 ────────────────────────── -->
+  <section class="lecture" id="l16">
+    <div class="lec-header">
+      <span class="lec-num">LEC 16</span>
+      <div class="lec-title-block">
+        <h2>Chat History & Memory</h2>
+        <div class="lec-meta"><span class="tag tag-theory">Theory</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>The Problem: LLMs are Stateless</h3>
+    <p>Each call to an LLM is independent — it has no memory of previous turns. To build conversational apps, you must <strong>manually include chat history</strong> in each prompt.</p>
+    <h3>Approach 1: Manual History</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.messages <span class="kw">import</span> <span class="cl">HumanMessage</span>, <span class="cl">AIMessage</span>
+
+history = []
+
+<span class="kw">def</span> <span class="fn">chat</span>(user_input):
+    history.append(<span class="cl">HumanMessage</span>(content=user_input))
+    response = model.invoke(history)
+    history.append(<span class="cl">AIMessage</span>(content=response.content))
+    <span class="kw">return</span> response.content
+</code></pre>
+    <h3>Approach 2: RunnableWithMessageHistory</h3>
+    <p>The LangChain way to add session-based memory to any chain:</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.chat_history <span class="kw">import</span> <span class="cl">BaseChatMessageHistory</span>
+<span class="kw">from</span> langchain_community.chat_message_histories <span class="kw">import</span> <span class="cl">ChatMessageHistory</span>
+<span class="kw">from</span> langchain_core.runnables.history <span class="kw">import</span> <span class="cl">RunnableWithMessageHistory</span>
+
+<span class="cm"># Session store</span>
+store = {}
+
+<span class="kw">def</span> <span class="fn">get_history</span>(session_id: str) -> <span class="cl">BaseChatMessageHistory</span>:
+    <span class="kw">if</span> session_id <span class="kw">not in</span> store:
+        store[session_id] = <span class="cl">ChatMessageHistory</span>()
+    <span class="kw">return</span> store[session_id]
+
+<span class="cm"># Prompt with history placeholder</span>
+prompt = <span class="cl">ChatPromptTemplate</span>.from_messages([
+    (<span class="str">"system"</span>, <span class="str">"You are a helpful assistant."</span>),
+    <span class="cl">MessagesPlaceholder</span>(variable_name=<span class="str">"history"</span>),
+    (<span class="str">"human"</span>, <span class="str">"{input}"</span>)
+])
+
+chain = prompt | model | <span class="cl">StrOutputParser</span>()
+
+<span class="cm"># Wrap with history</span>
+chain_with_history = <span class="cl">RunnableWithMessageHistory</span>(
+    chain,
+    get_history,
+    input_messages_key=<span class="str">"input"</span>,
+    history_messages_key=<span class="str">"history"</span>
+)
+
+<span class="cm"># Use — session_id tracks the conversation</span>
+config = {<span class="str">"configurable"</span>: {<span class="str">"session_id"</span>: <span class="str">"user_42"</span>}}
+chain_with_history.invoke({<span class="str">"input"</span>: <span class="str">"Hi, I'm Tushar"</span>}, config=config)
+chain_with_history.invoke({<span class="str">"input"</span>: <span class="str">"What's my name?"</span>}, config=config)
+<span class="cm"># Returns "Tushar" — it remembers!</span>
+</code></pre>
+    <h3>Memory Backends</h3>
+    <div class="key-concepts">
+      <span class="concept-pill">ChatMessageHistory (in-memory)</span>
+      <span class="concept-pill">RedisChatMessageHistory</span>
+      <span class="concept-pill">MongoDBChatMessageHistory</span>
+      <span class="concept-pill">SQLChatMessageHistory</span>
+    </div>
+    <div class="callout callout-warn">
+      <div class="callout-label">⚠️ Token Limit</div>
+      <p>Unbounded history will hit the context window limit. Use <code>trim_messages()</code> to keep only the last N messages, or use a summarization memory strategy for long conversations.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 17 ────────────────────────── -->
+  <section class="lecture" id="l17">
+    <div class="lec-header">
+      <span class="lec-num">LEC 17</span>
+      <div class="lec-title-block">
+        <h2>Tool Calling in LangChain</h2>
+        <div class="lec-meta"><span class="tag tag-agent">Agent</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>What is Tool Calling?</h3>
+    <p>Tool calling (aka function calling) allows the LLM to <strong>decide to call an external function</strong> when it needs to. The model outputs a structured request to call a tool with specific arguments — the app then executes it and returns the result.</p>
+    <div class="flow">
+User: "What's the weather in Delhi?"
+  → LLM decides: I should call get_weather(city="Delhi")
+  → App calls the actual weather API
+  → Result returned to LLM: "28°C, sunny"
+  → LLM responds: "It's 28°C and sunny in Delhi!"</div>
+    <h3>Defining Tools</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.tools <span class="kw">import</span> tool
+
+<span class="imp">@tool</span>
+<span class="kw">def</span> <span class="fn">get_weather</span>(city: str) -> str:
+    <span class="str">"""Get the current weather for a given city."""</span>
+    <span class="cm"># In reality, call a weather API</span>
+    <span class="kw">return</span> <span class="fn">f</span><span class="str">"28°C and sunny in {city}"</span>
+
+<span class="imp">@tool</span>
+<span class="kw">def</span> <span class="fn">search_web</span>(query: str) -> str:
+    <span class="str">"""Search the web for current information."""</span>
+    <span class="kw">return</span> <span class="fn">f</span><span class="str">"Results for: {query}"</span>
+
+tools = [get_weather, search_web]
+</code></pre>
+    <h3>Binding Tools to a Model</h3>
+<pre data-lang="python"><code>model_with_tools = model.bind_tools(tools)
+
+response = model_with_tools.invoke(<span class="str">"What's the weather in Mumbai?"</span>)
+
+<span class="cm"># Check if model wants to call a tool</span>
+<span class="fn">print</span>(response.tool_calls)
+<span class="cm"># [{'name': 'get_weather', 'args': {'city': 'Mumbai'}, 'id': 'call_abc123'}]</span>
+</code></pre>
+    <h3>Manual Tool Execution</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_core.messages <span class="kw">import</span> <span class="cl">ToolMessage</span>
+
+<span class="kw">for</span> tool_call <span class="kw">in</span> response.tool_calls:
+    tool_name = tool_call[<span class="str">"name"</span>]
+    tool_args = tool_call[<span class="str">"args"</span>]
+    
+    <span class="cm"># Find and execute the tool</span>
+    tool_map = {t.name: t <span class="kw">for</span> t <span class="kw">in</span> tools}
+    result = tool_map[tool_name].invoke(tool_args)
+    
+    <span class="cm"># Add result back to conversation</span>
+    messages.append(<span class="cl">ToolMessage</span>(content=result, tool_call_id=tool_call[<span class="str">"id"</span>]))
+</code></pre>
+    <div class="callout callout-info">
+      <div class="callout-label">📌 Tool vs Agent</div>
+      <p>Manual tool calling is a single round-trip. An <strong>Agent</strong> loops — it calls tools repeatedly, evaluates results, and keeps going until the task is done.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 18 ────────────────────────── -->
+  <section class="lecture" id="l18">
+    <div class="lec-header">
+      <span class="lec-num">LEC 18</span>
+      <div class="lec-title-block">
+        <h2>Building an End-to-End AI Agent</h2>
+        <div class="lec-meta"><span class="tag tag-agent">Agent</span><span class="tag tag-project">Project</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>What is an Agent?</h3>
+    <p>An Agent is a loop where the LLM <strong>decides what to do next</strong> — call a tool, call another tool, or respond to the user. It keeps looping until it decides the task is done. The LLM is the "brain"; tools are its "hands".</p>
+    <div class="flow">
+User Input
+  → LLM (with tools bound)
+  → Tool call? YES → Execute Tool → Feed result back → LLM
+  → Tool call? NO  → Final Answer → User</div>
+    <h3>ReAct Agent Pattern</h3>
+    <p><strong>ReAct = Reasoning + Acting</strong>. The model alternates between thinking (reasoning) and acting (calling tools), making the decision process transparent.</p>
+    <h3>Building an Agent with LangChain</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain.agents <span class="kw">import</span> create_tool_calling_agent, <span class="cl">AgentExecutor</span>
+<span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> <span class="cl">ChatPromptTemplate</span>, <span class="cl">MessagesPlaceholder</span>
+
+<span class="cm"># Tools</span>
+tools = [get_weather, search_web, calculator_tool]
+
+<span class="cm"># Agent prompt (must have agent_scratchpad)</span>
+prompt = <span class="cl">ChatPromptTemplate</span>.from_messages([
+    (<span class="str">"system"</span>, <span class="str">"You are a helpful AI assistant with access to tools."</span>),
+    (<span class="str">"human"</span>, <span class="str">"{input}"</span>),
+    <span class="cl">MessagesPlaceholder</span>(variable_name=<span class="str">"agent_scratchpad"</span>)
+])
+
+<span class="cm"># Create agent</span>
+agent = create_tool_calling_agent(model, tools, prompt)
+
+<span class="cm"># Executor runs the agent loop</span>
+executor = <span class="cl">AgentExecutor</span>(
+    agent=agent,
+    tools=tools,
+    verbose=<span class="imp">True</span>,      <span class="cm"># see reasoning steps</span>
+    max_iterations=<span class="imp">10</span>  <span class="cm"># prevent infinite loops</span>
+)
+
+result = executor.invoke({<span class="str">"input"</span>: <span class="str">"What's the weather in Delhi and search for latest LangChain news?"</span>})
+<span class="fn">print</span>(result[<span class="str">"output"</span>])
+</code></pre>
+    <h3>Agent with Memory</h3>
+<pre data-lang="python"><code>agent_with_memory = <span class="cl">RunnableWithMessageHistory</span>(
+    executor,
+    get_history,
+    input_messages_key=<span class="str">"input"</span>,
+    history_messages_key=<span class="str">"chat_history"</span>
+)
+</code></pre>
+    <div class="callout callout-key">
+      <div class="callout-label">🔑 Key Design Decisions</div>
+      <p>Write clear tool docstrings — the LLM reads them to decide which tool to use. Vague descriptions lead to wrong tool selection. Set <code>max_iterations</code> to prevent runaway agents. Use <code>verbose=True</code> during development to see the reasoning chain.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 19 ────────────────────────── -->
+  <section class="lecture" id="l19">
+    <div class="lec-header">
+      <span class="lec-num">LEC 19</span>
+      <div class="lec-title-block">
+        <h2>Project: YouTube RAG Chatbot</h2>
+        <div class="lec-meta"><span class="tag tag-project">Project</span><span class="tag tag-rag">RAG</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>Project Overview</h3>
+    <p>Build a chatbot that answers questions about any YouTube video using its transcript. Combines: <strong>YoutubeLoader → Splitter → Embeddings → FAISS → RAG Chain with Memory</strong>.</p>
+    <h3>Full Implementation</h3>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_community.document_loaders <span class="kw">import</span> <span class="cl">YoutubeLoader</span>
+<span class="kw">from</span> langchain_text_splitters <span class="kw">import</span> <span class="cl">RecursiveCharacterTextSplitter</span>
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> <span class="cl">OpenAIEmbeddings</span>, <span class="cl">ChatOpenAI</span>
+<span class="kw">from</span> langchain_community.vectorstores <span class="kw">import</span> <span class="cl">FAISS</span>
+<span class="kw">from</span> langchain_core.prompts <span class="kw">import</span> <span class="cl">ChatPromptTemplate</span>, <span class="cl">MessagesPlaceholder</span>
+<span class="kw">from</span> langchain_core.output_parsers <span class="kw">import</span> <span class="cl">StrOutputParser</span>
+<span class="kw">from</span> langchain_core.runnables <span class="kw">import</span> <span class="cl">RunnablePassthrough</span>
+<span class="kw">from</span> langchain_core.runnables.history <span class="kw">import</span> <span class="cl">RunnableWithMessageHistory</span>
+<span class="kw">from</span> langchain_community.chat_message_histories <span class="kw">import</span> <span class="cl">ChatMessageHistory</span>
+
+<span class="cm"># ── Step 1: Load YouTube transcript ──</span>
+loader = <span class="cl">YoutubeLoader</span>.from_youtube_url(
+    <span class="str">"https://youtube.com/watch?v=YOUR_VIDEO_ID"</span>,
+    add_video_info=<span class="imp">True</span>,
+    language=[<span class="str">"en"</span>, <span class="str">"hi"</span>]
+)
+docs = loader.load()
+
+<span class="cm"># ── Step 2: Chunk ──</span>
+splitter = <span class="cl">RecursiveCharacterTextSplitter</span>(chunk_size=<span class="imp">1000</span>, chunk_overlap=<span class="imp">200</span>)
+chunks = splitter.split_documents(docs)
+
+<span class="cm"># ── Step 3: Embed & Store ──</span>
+vectorstore = <span class="cl">FAISS</span>.from_documents(chunks, <span class="cl">OpenAIEmbeddings</span>())
+retriever = vectorstore.as_retriever(search_kwargs={<span class="str">"k"</span>: <span class="imp">5</span>})
+
+<span class="cm"># ── Step 4: Prompt ──</span>
+prompt = <span class="cl">ChatPromptTemplate</span>.from_messages([
+    (<span class="str">"system"</span>, <span class="str">"""You are an assistant that answers questions about a YouTube video.
+Use the following transcript excerpts to answer questions.
+If you don't know, say so — don't make things up.
+
+Context from video:
+{context}"""</span>),
+    <span class="cl">MessagesPlaceholder</span>(variable_name=<span class="str">"history"</span>),
+    (<span class="str">"human"</span>, <span class="str">"{question}"</span>)
+])
+
+<span class="cm"># ── Step 5: Chain ──</span>
+<span class="kw">def</span> <span class="fn">format_docs</span>(docs):
+    <span class="kw">return</span> <span class="str">"\n\n"</span>.join(d.page_content <span class="kw">for</span> d <span class="kw">in</span> docs)
+
+rag_chain = (
+    {
+        <span class="str">"context"</span>: retriever | format_docs,
+        <span class="str">"question"</span>: <span class="cl">RunnablePassthrough</span>()
+    }
+    | prompt
+    | <span class="cl">ChatOpenAI</span>(model=<span class="str">"gpt-4o"</span>)
+    | <span class="cl">StrOutputParser</span>()
+)
+
+<span class="cm"># ── Step 6: Add memory ──</span>
+store = {}
+<span class="kw">def</span> <span class="fn">get_session</span>(session_id):
+    <span class="kw">if</span> session_id <span class="kw">not in</span> store:
+        store[session_id] = <span class="cl">ChatMessageHistory</span>()
+    <span class="kw">return</span> store[session_id]
+
+chatbot = <span class="cl">RunnableWithMessageHistory</span>(
+    rag_chain, get_session,
+    input_messages_key=<span class="str">"question"</span>,
+    history_messages_key=<span class="str">"history"</span>
+)
+
+<span class="cm"># ── Usage ──</span>
+config = {<span class="str">"configurable"</span>: {<span class="str">"session_id"</span>: <span class="str">"user_1"</span>}}
+answer = chatbot.invoke(<span class="str">"What is this video about?"</span>, config=config)
+</code></pre>
+    <h3>Optional: Streamlit UI</h3>
+<pre data-lang="python"><code><span class="kw">import</span> streamlit <span class="kw">as</span> st
+
+st.title(<span class="str">"YouTube RAG Chatbot"</span>)
+url = st.text_input(<span class="str">"Enter YouTube URL"</span>)
+question = st.chat_input(<span class="str">"Ask about the video"</span>)
+
+<span class="kw">if</span> question:
+    answer = chatbot.invoke(question, config=config)
+    st.write(answer)
+</code></pre>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 20 ────────────────────────── -->
+  <section class="lecture" id="l20">
+    <div class="lec-header">
+      <span class="lec-num">LEC 20</span>
+      <div class="lec-title-block">
+        <h2>Local LLMs with Ollama</h2>
+        <div class="lec-meta"><span class="tag tag-theory">Theory</span><span class="tag tag-code">Code</span></div>
+      </div>
+    </div>
+    <h3>Why Ollama?</h3>
+    <p>Ollama lets you run powerful open-source LLMs <strong>locally on your machine</strong> — no API key, no cost, complete privacy. Works seamlessly with LangChain via the same interface.</p>
+    <h3>Setup</h3>
+<pre data-lang="bash"><code><span class="cm"># Install Ollama (Mac/Linux)</span>
+curl -fsSL https://ollama.ai/install.sh | sh
+
+<span class="cm"># Pull a model</span>
+ollama pull llama3.2        <span class="cm"># Meta's Llama 3.2 (8B)</span>
+ollama pull mistral         <span class="cm"># Mistral 7B</span>
+ollama pull gemma2          <span class="cm"># Google Gemma 2</span>
+ollama pull nomic-embed-text <span class="cm"># Embedding model</span>
+
+<span class="cm"># Start Ollama server</span>
+ollama serve  <span class="cm"># runs at http://localhost:11434</span>
+</code></pre>
+    <h3>Using Ollama in LangChain</h3>
+<pre data-lang="python"><code>pip install langchain-ollama
+</code></pre>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_ollama <span class="kw">import</span> <span class="cl">ChatOllama</span>, <span class="cl">OllamaEmbeddings</span>
+
+<span class="cm"># Chat model</span>
+model = <span class="cl">ChatOllama</span>(model=<span class="str">"llama3.2"</span>, temperature=<span class="imp">0.7</span>)
+response = model.invoke(<span class="str">"What is LangChain?"</span>)
+
+<span class="cm"># Embeddings</span>
+embeddings = <span class="cl">OllamaEmbeddings</span>(model=<span class="str">"nomic-embed-text"</span>)
+
+<span class="cm"># Plug directly into RAG chain — same API!</span>
+vectorstore = <span class="cl">FAISS</span>.from_documents(chunks, embeddings)
+rag_chain = retriever | prompt | model | <span class="cl">StrOutputParser</span>()
+</code></pre>
+    <h3>Recommended Models for RAG</h3>
+    <table>
+      <tr><th>Model</th><th>Size</th><th>Best For</th></tr>
+      <tr><td>llama3.2</td><td>8B</td><td>General purpose, fast</td></tr>
+      <tr><td>mistral</td><td>7B</td><td>Instructions, coding</td></tr>
+      <tr><td>gemma2</td><td>9B</td><td>Reasoning, analysis</td></tr>
+      <tr><td>deepseek-r1</td><td>7B</td><td>Step-by-step reasoning</td></tr>
+      <tr><td>nomic-embed-text</td><td>—</td><td>Embeddings only</td></tr>
+    </table>
+    <div class="callout callout-key">
+      <div class="callout-label">🔑 Provider Agnostic</div>
+      <p>The beauty of LangChain — swap <code>ChatOpenAI()</code> for <code>ChatOllama()</code> and your entire chain works with a local model. No code changes needed downstream.</p>
+    </div>
+  </section>
+  <div class="divider"></div>
+
+  <!-- ────────────────────────── LECTURE 21 ────────────────────────── -->
+  <section class="lecture" id="l21">
+    <div class="lec-header">
+      <span class="lec-num">LEC 21</span>
+      <div class="lec-title-block">
+        <h2>Advanced RAG Techniques</h2>
+        <div class="lec-meta"><span class="tag tag-rag">RAG</span><span class="tag tag-agent">Advanced</span></div>
+      </div>
+    </div>
+    <h3>Why Basic RAG Fails</h3>
+    <p>Basic RAG has known failure modes: poor chunk quality, single-query limitations, irrelevant retrievals, and no quality feedback loop. Advanced RAG addresses these:</p>
+    <h3>1. Hybrid Search (BM25 + Vector)</h3>
+    <p>Combine keyword search (BM25) with semantic search (vector) using <code>EnsembleRetriever</code>:</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_community.retrievers <span class="kw">import</span> <span class="cl">BM25Retriever</span>
+<span class="kw">from</span> langchain.retrievers <span class="kw">import</span> <span class="cl">EnsembleRetriever</span>
+
+bm25 = <span class="cl">BM25Retriever</span>.from_documents(chunks, k=<span class="imp">4</span>)
+vector = vectorstore.as_retriever(search_kwargs={<span class="str">"k"</span>: <span class="imp">4</span>})
+
+hybrid = <span class="cl">EnsembleRetriever</span>(
+    retrievers=[bm25, vector],
+    weights=[<span class="imp">0.4</span>, <span class="imp">0.6</span>]  <span class="cm"># 40% keyword, 60% semantic</span>
+)
+</code></pre>
+    <h3>2. Reranking (Cross-Encoder)</h3>
+    <p>After retrieval, rerank results with a more accurate cross-encoder model before sending to LLM:</p>
+<pre data-lang="python"><code>pip install flashrank
+</code></pre>
+<pre data-lang="python"><code><span class="kw">from</span> langchain_community.document_compressors <span class="kw">import</span> <span class="cl">FlashrankRerank</span>
+<span class="kw">from</span> langchain.retrievers <span class="kw">import</span> <span class="cl">ContextualCompressionRetriever</span>
+
+reranker = <span class="cl">FlashrankRerank</span>(top_n=<span class="imp">3</span>)
+retriever = <span class="cl">ContextualCompressionRetriever</span>(
+    base_compressor=reranker,
+    base_retriever=hybrid
+)
+</code></pre>
+    <h3>3. Parent Document Retriever</h3>
+    <p>Embed small chunks (for precise matching) but return the full parent document (for context):</p>
+<pre data-lang="python"><code><span class="kw">from</span> langchain.retrievers <span class="kw">import</span> <span class="cl">ParentDocumentRetriever</span>
+<span class="kw">from</span> langchain.storage <span class="kw">import</span> <span class="cl">InMemoryStore</span>
+
+store = <span class="cl">InMemoryStore</span>()
+retriever = <span class="cl">ParentDocumentRetriever</span>(
+    vectorstore=vectorstore,
+    docstore=store,
+    child_splitter=<span class="cl">RecursiveCharacterTextSplitter</span>(chunk_size=<span class="imp">400</span>),
+    parent_splitter=<span class="cl">RecursiveCharacterTextSplitter</span>(chunk_size=<span class="imp">2000</span>)
+)
+</code></pre>
+    <h3>4. HyDE (Hypothetical Document Embeddings)</h3>
+    <p>Generate a hypothetical answer to the query, embed that, and use it for retrieval. Often more semantically aligned than embedding the raw question:</p>
+<pre data-lang="python"><code><span class="cm"># Generate hypothetical answer</span>
+hyde_prompt = <span class="cl">ChatPromptTemplate</span>.from_template(
+    <span class="str">"Write a short paragraph that answers: {question}"</span>
+)
+hyde_chain = hyde_prompt | model | <span class="cl">StrOutputParser</span>()
+
+hypothetical_doc = hyde_chain.invoke({<span class="str">"question"</span>: user_query})
+docs = retriever.invoke(hypothetical_doc)  <span class="cm"># embed hypothetical, not query</span>
+</code></pre>
+    <h3>Advanced RAG Architecture Map</h3>
+    <div class="flow">
+Query
+  → MultiQuery (generate N variations)
+  → HyDE (generate hypothetical answer)
+  → Hybrid Search (BM25 + Vector)
+  → Reranker (Cross-Encoder)
+  → Context Compression
+  → RAG Chain → Answer</div>
+    <div class="callout callout-tip">
+      <div class="callout-label">✅ Next Steps</div>
+      <p>After this playlist, check out <strong>CampusX Advanced RAG</strong> course for: RAG Fusion, Corrective RAG (CRAG), Self-RAG, Graph RAG, Agentic RAG with LangGraph, and RAGAS evaluation.</p>
+    </div>
+    <div class="callout callout-info">
+      <div class="callout-label">📌 DevMind Relevance</div>
+      <p>For building DevMind (AST-aware codebase intelligence), combine <strong>Hybrid BM25 + Vector retrieval</strong> + <strong>Cross-encoder reranking</strong> + <strong>ParentDocumentRetriever</strong> on code chunks. These advanced techniques are the difference between a demo and a production tool.</p>
+    </div>
+  </section>
+
+  <!-- END SPACER -->
+  <div style="height: 4rem;"></div>
+
+</main>
+</div>
+
+<script>
+  // Active sidebar link highlighting
+  const sections = document.querySelectorAll('.lecture');
+  const navLinks = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const id = entry.target.id;
+        const active = document.querySelector(`nav a[href="#${id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3, rootMargin: '-56px 0px -50% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
